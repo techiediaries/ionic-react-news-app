@@ -1,71 +1,71 @@
 import {
   IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
   IonContent,
   IonHeader,
-  IonIcon,
   IonItem,
-  IonLabel,
   IonList,
-  IonListHeader,
   IonMenuButton,
   IonTitle,
-  IonToolbar
-  } from '@ionic/react';
-import { book, build, colorFill, grid } from 'ionicons/icons';
+  IonToolbar,
+  IonButton
+} from '@ionic/react';
+
 import React from 'react';
+import axios from 'axios';
+
 import './Home.css';
 
+const API_KEY = "e40d07f00b094602953cc3bf8537477e";
+const URL = `https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=${API_KEY}`;
+
+const fetchArticles = () => {
+
+  return axios({
+    url: URL,
+    method: 'get'
+  }).then(response => {
+
+    console.log(response);
+    return response.data;
+  })
+};
+
 const HomePage: React.FunctionComponent = () => {
+
+  const [articles, setArticles] = React.useState([]);
+  const items: any[] = [];
+
+  React.useEffect(() => {
+
+    fetchArticles().then(data => setArticles(data.articles));
+
+  }, []);
+
   return (
     <>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="primary">
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
           <IonTitle>Home</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent>
-        <IonCard class="welcome-card">
-          <img src="/assets/shapes.svg" alt=""/>
-          <IonCardHeader>
-            <IonCardSubtitle>Get Started</IonCardSubtitle>
-            <IonCardTitle>Welcome to Ionic</IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent>
-            <p>
-              Now that your app has been created, you'll want to start building out features and
-              components. Check out some of the resources below for next steps.
-            </p>
-          </IonCardContent>
-        </IonCard>
+      <IonContent color="primary" >
+        <IonList color="primary">
 
-        <IonList lines="none">
-          <IonListHeader>
-            <IonLabel>Resources</IonLabel>
-          </IonListHeader>
-          <IonItem href="https://ionicframework.com/docs/" target="_blank">
-            <IonIcon slot="start" color="medium" icon={book} />
-            <IonLabel>Ionic Documentation</IonLabel>
-          </IonItem>
-          <IonItem href="https://ionicframework.com/docs/building/scaffolding" target="_blank">
-            <IonIcon slot="start" color="medium" icon={build} />
-            <IonLabel>Scaffold Out Your App</IonLabel>
-          </IonItem>
-          <IonItem href="https://ionicframework.com/docs/layout/structure" target="_blank">
-            <IonIcon slot="start" color="medium" icon={grid} />
-            <IonLabel>Change Your App Layout</IonLabel>
-          </IonItem>
-          <IonItem href="https://ionicframework.com/docs/theming/basics" target="_blank">
-            <IonIcon slot="start" color="medium" icon={colorFill} />
-            <IonLabel>Theme Your App</IonLabel>
-          </IonItem>
+          {
+            articles.map(a => {
+              
+              return (
+                <IonItem>
+                  {a['title']}
+                  <IonButton href={a['url']} color="primary" slot="end">Read</IonButton>
+                </IonItem>
+              );
+            })
+          }
+
         </IonList>
       </IonContent>
     </>
